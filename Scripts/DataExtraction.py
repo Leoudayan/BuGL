@@ -19,12 +19,12 @@ options.add_argument("--disable-notifications")
 # For Windows
 # Path to the location of chrome driver
 # Opens an instance of chrome driver using selenium web driver
-driver = webdriver.Chrome(r"C:\Users\muvva\Documents\chromedriver.exe",chrome_options=options)
+#driver = webdriver.Chrome(r"C:\Users\muvva\Documents\chromedriver.exe",chrome_options=options)
 
 # For Ubuntu
 # Path to the location of chrome driver
 # Opens an instance of chrome driver using selenium web driver
-#driver = webdriver.Chrome(r"/home/users/CS16B017/Downloads/chromedriver_linux64/chromedriver",chrome_options=options)
+driver = webdriver.Chrome(r"/usr/local/bin/chromedriver",chrome_options=options)
 
 # repo_issues -> stores the metadata of the pull requests
 # Metadata includes url of pull request, id of pull request, summary, description and info of files changed (i.e., path to files changed and number of files changed in each file)
@@ -44,7 +44,7 @@ def open_issues_info(open_pages,github_link):
 		sleep(1)
 		try:
                         # All the links of open issues are stored in the variable repo_open_url (array)
-			repo_open_url = [x.get_attribute('href') for x in driver.find_element_by_xpath('//div[@aria-label="Issues"]').find_elements_by_class_name('h4')]
+			repo_open_url = [x.get_attribute('href') for x in driver.find_element(By.XPATH,'//div[@aria-label="Issues"]').find_elements_by_class_name('h4')]
 			print(len(repo_open_url))
 			for j in repo_open_url:
 				k = k+1
@@ -52,20 +52,20 @@ def open_issues_info(open_pages,github_link):
                                         # Get the link of open issues
 					driver.get(j)
 					sleep(1)
-					opened_by = driver.find_element_by_class_name('TableObject-item--primary')
+					opened_by = driver.find_element(By.CLASS_NAME,'TableObject-item--primary')
 					# Stores Issue reporting time
-					reporting_timestamp = opened_by.find_element_by_xpath('relative-time').get_attribute('datetime')
+					reporting_timestamp = opened_by.find_element(By.XPATH,'relative-time').get_attribute('datetime')
 					temp_issue = {}
 					# url of open issue
 					temp_issue['issue_url'] = j
 					# issue_id of open issue
-					temp_issue['issue_id'] = driver.find_element_by_class_name('gh-header-number').text
+					temp_issue['issue_id'] = driver.find_element(By.CLASS_NAME,'gh-header-number').text
 					# Summary of the issue
-					temp_issue['issue_summary'] = driver.find_element_by_class_name('js-issue-title').text
+					temp_issue['issue_summary'] = driver.find_element(By.CLASS_NAME,'js-issue-title').text
 					# Description of the issue
-					temp_issue['issue_description'] = driver.find_elements_by_class_name('js-comment-container')[0].text
+					temp_issue['issue_description'] = driver.find_element(By.CLASS_NAME,'js-comment-container')[0].text
 					# Status of the issue (Open)
-					temp_issue['issue_status'] = driver.find_element_by_class_name('State').text
+					temp_issue['issue_status'] = driver.find_element(By.CLASS_NAME,'State').text
 					# Storing the reporting time of the issue
 					temp_issue['issue_reporting_time'] = reporting_timestamp
 					repo_open_issues[str(k)] = temp_issue
@@ -91,18 +91,18 @@ def closed_issues_info(closed_pages,github_link):
 		sleep(1)
 		try:
                         # All the links of closed issues are stored in the variable repo_closed_url (array)
-			repo_closed_url = [x.get_attribute('href') for x in driver.find_element_by_xpath('//div[@aria-label="Issues"]').find_elements_by_class_name('h4')]
+			repo_closed_url = [x.get_attribute('href') for x in driver.find_element(By.XPATH,'//div[@aria-label="Issues"]').find_elements_by_class_name('h4')]
 			for j in repo_closed_url:
 				try:
 					k = k+1
 					# Get the link of closed issue
 					driver.get(j)
 					sleep(1)
-					opened_by = driver.find_element_by_class_name('TableObject-item--primary')
+					opened_by = driver.find_element(By.CLASS_NAME,'TableObject-item--primary')
 					# Stores the ID of the pull request that resolved the issue
 					fixed_by = (opened_by.text).split('Fixed by ')
 					# Stores Issue reporting time
-					reporting_timestamp = opened_by.find_element_by_xpath('relative-time').get_attribute('datetime')
+					reporting_timestamp = opened_by.find_element(By.XPATH,'relative-time').get_attribute('datetime')
 					pull_request_id = ""
 					if(len(fixed_by)==2):
 						pull_request_id = (fixed_by[1].split(' '))[0]
@@ -110,13 +110,13 @@ def closed_issues_info(closed_pages,github_link):
 					# url of closed issue
 					temp_issue['issue_url'] = j
 					# ID of closed issue
-					temp_issue['issue_id'] = driver.find_element_by_class_name('gh-header-number').text
+					temp_issue['issue_id'] = driver.find_element(By.CLASS_NAME,'gh-header-number').text
 					# Summary of closed issue
-					temp_issue['issue_summary'] = driver.find_element_by_class_name('js-issue-title').text
+					temp_issue['issue_summary'] = driver.find_element(By.CLASS_NAME,'js-issue-title').text
 					# Description of closed issue
-					temp_issue['issue_description'] = driver.find_elements_by_class_name('js-comment-container')[0].text
+					temp_issue['issue_description'] = driver.find_element(By.CLASS_NAME,'js-comment-container')[0].text
 					# Status of closed issue (Closed)
-					temp_issue['issue_status'] = driver.find_element_by_class_name('State').text
+					temp_issue['issue_status'] = driver.find_element(By.CLASS_NAME,'State').text
 					# Reporting time of the issue
 					temp_issue['issue_reporting_time'] = reporting_timestamp
 					# ID of pull request that closed the issue
@@ -126,13 +126,13 @@ def closed_issues_info(closed_pages,github_link):
                                                 # Get the link of pull request using chrome driver
 						driver.get(github_link + 'pull/' + pull_request_id.split('#')[1])
 						sleep(1)
-						opened_by = driver.find_element_by_class_name('TableObject-item--primary')
+						opened_by = driver.find_element(By.CLASS_NAME,'TableObject-item--primary')
 						# Stores the time at which the pull request was merged (time at which issue is closed)
-						fixed_timestamp = opened_by.find_element_by_xpath('relative-time').get_attribute('datetime')
+						fixed_timestamp = opened_by.find_element(By.XPATH,'relative-time').get_attribute('datetime')
 						# Summary of the pull request
-						temp_issue['pull_request_summary'] = driver.find_element_by_class_name('js-issue-title').text
+						temp_issue['pull_request_summary'] = driver.find_element(By.CLASS_NAME,'js-issue-title').text
 						# Description of the pull request
-						temp_issue['pull_request_description'] = driver.find_elements_by_class_name('js-comment-container')[0].text
+						temp_issue['pull_request_description'] = driver.find_element(By.CLASS_NAME,'js-comment-container')[0].text
 						# Status of the pull request
 						temp_issue['pull_request_status'] = 'Merged'
 						# Time at which issue id fixed
@@ -169,14 +169,23 @@ def get_issues_info(github_link):
 	# Get the url of pull requests of a repository
 	driver.get(issues_url)
 	# Store the links to open and closed issues
-	issues = driver.find_elements_by_xpath('//*[@id="js-issues-toolbar"]/div/div[1]/div/a')
-	open_issues, closed_issues = issues[0].get_attribute('href'), issues[1].get_attribute('href')
+	issues = driver.find_element(By.XPATH,'//*[@id="js-issues-toolbar"]/div/div/div/a')
+	print("Here is the issue details" , issues)
+	# open_issues, closed_issues = issues[0].get_attribute('href'), issues[1].get_attribute('href')
+	open_issues = issues.get_attribute('href')
+	print("Open Issues URL: ", open_issues)
+	issues = driver.find_element(By.XPATH,'//*[@id="js-issues-toolbar"]/div/div/div/a[2]')
+	closed_issues = issues.get_attribute('href')
+	
+	print("Closed Issues URL: ", closed_issues)
 	# Get meta data of Open issues
 	driver.get(open_issues)
 	sleep(1)
 	try:
                 # Number of pages of open issues
-		pages = driver.find_element_by_class_name('pagination').find_elements_by_xpath('a')
+		#pages = driver.find_element_by_class_name('pagination').find_elements_by_xpath('a')
+		pages = driver.find_element(By.CLASS_NAME,'pagination').find_element(By.XPATH,'a')
+		print("Here are the Pages:", pages)
 		open_pages = int(pages[len(pages)-2].text)
 	except:
 		open_pages = 1
@@ -190,7 +199,7 @@ def get_issues_info(github_link):
 	sleep(1)
 	try:
                 # Number of pages of closed issues
-		pages = driver.find_element_by_class_name('pagination').find_elements_by_xpath('a')	
+		pages = driver.find_element(By.CLASS_NAME,'pagination').find_element(By.XPATH,'a')	
 		closed_pages = int(pages[len(pages)-2].text)
 	except:
 		closed_pages = 1
